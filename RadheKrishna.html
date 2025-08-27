@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta tags ko set karna for basic page setup -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <!-- Title set karna -->
+    <title>Radhe Krishna</title>
+
+    <!-- Google Fonts ko link karna for typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&family=Playfair+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Inline CSS style sheet start karna -->
+    <style>
+        /* Root variables define karna for consistent styling */
+        :root {
+            --glass-bg: rgba(0, 0, 0, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --text-primary: rgba(0, 0, 0, 0.9);
+            --text-secondary: rgba(0, 0, 0, 0.8);
+            --shadow-soft: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --shadow-medium: 0 12px 40px rgba(0, 0, 0, 0.3);
+            --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Global reset aur base styling karna */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* HTML smooth scrolling enable karna */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Body base styling set karna, including scrollbar customization */
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+            position: relative;
+        }
+
+        /* Webkit scrollbar customize karna for Chrome/Safari */
+        body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        body::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #f8c7dc, #87ceeb);
+            border-radius: 10px;
+        }
+
+        /* Enhanced Gradient Background System setup karna */
+        .gradient-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -10;
+            pointer-events: none;
+            background-size: 200% 200%;
+            background-position: center center;
+            filter: blur(8px) brightness(0.87);
+            transition: opacity 1s ease-in-out;
+        }
+
+        /* Gradient overlay ke pseudo elements add karna for layering */
+        .gradient-overlay::before,
+        .gradient-overlay::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: opacity 1.5s ease-in-out;
+            z-index: -1;
+        }
+
+        /* Section ke liye radial blur enhancement add karna */
+        section .radial-blur {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300vw;
+            height: 300vh;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle at center, rgba(255,255,255,0.08) 0%, transparent 60%);
+            opacity: 0.5;
+            z-index: -5;
+        }
+
+        /* Modern light orbs styling karna */
+        .light-orbs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Individual orb styling aur animation */
+        .orb {
+            position: absolute;
+            width: clamp(3px, 0.6vw, 8px);
+            height: clamp(3px, 0.6vw, 8px);
+            background: radial-gradient(circle, 
+                rgba(255, 255, 255, 0.8) 0%,
+                rgba(248, 199, 220, 0.4) 40%,
+                transparent 70%);
+            border-radius: 50%;
+            animation: orbFloatModern 22s ease-in-out infinite;
+            filter: blur(0.5px);
+        }
+
+        /* Orb float animation define karna */
+        @keyframes orbFloatModern {
+            0%, 100% {
+                transform: translate(0, 0) scale(0.3);
+                opacity: 0;
+            }
+            25% {
+                transform: translate(15vw, 15vh) scale(1);
+                opacity: 0.6;
+            }
+            50% {
+                transform: translate(-8vw, 35vh) scale(0.7);
+                opacity: 0.8;
+            }
+            75% {
+                transform: translate(25vw, 55vh) scale(1.1);
+                opacity: 0.4;
+            }
+        }
+
+        /* Modern Navigation styling with green glowing glass capsule */
+        .nav-modern {
+            position: fixed;
+            right: clamp(1.5rem, 4vw, 3rem);
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+            background: linear-gradient(135deg, 
+                rgba(0, 255, 127, 0.15) 0%,
+                rgba(34, 197, 94, 0.12) 50%,
+                rgba(16, 185, 129, 0.18) 100%);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 50px;
+            padding: clamp(1rem, 2vh, 1.5rem) clamp(0.8rem, 1.5vw, 1.2rem);
+            box-shadow: 
+                0 8px 32px rgba(34, 197, 94, 0.25),
+                0 0 20px rgba(0, 255, 127, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: clamp(1rem, 2.5vh, 1.5rem);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            animation: navGlow 3s ease-in-out infinite alternate;
+        }
+
+        /* Nav glow animation define karna */
+        @keyframes navGlow {
+            0% {
+                box-shadow: 
+                    0 8px 32px rgba(34, 197, 94, 0.25),
+                    0 0 20px rgba(0, 255, 127, 0.1),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            }
+            100% {
+                box-shadow: 
+                    0 12px 40px rgba(34, 197, 94, 0.35),
+                    0 0 30px rgba(0, 255, 127, 0.2),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            }
+        }
+
+        /* Nav hover effects add karna */
+        .nav-modern:hover {
+            background: linear-gradient(135deg, 
+                rgba(0, 255, 127, 0.25) 0%,
+                rgba(34, 197, 94, 0.22) 50%,
+                rgba(16, 185, 129, 0.28) 100%);
+            border-color: rgba(34, 197, 94, 0.5);
+            box-shadow: 
+                0 15px 50px rgba(34, 197, 94, 0.4),
+                0 0 40px rgba(0, 255, 127, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+
+        /* Nav dot styling karna */
+        .nav-dot {
+            width: clamp(10px, 2.5vw, 14px);
+            height: clamp(10px, 2.5vw, 14px);
+            border-radius: 50%;
+            background: linear-gradient(135deg, 
+                rgba(0, 255, 127, 0.2) 0%,
+                rgba(34, 197, 94, 0.15) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Nav dot ke pseudo element for inner glow */
+        .nav-dot::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            background: rgba(0, 255, 127, 0.8);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s ease;
+            box-shadow: 0 0 8px rgba(0, 255, 127, 0.4);
+        }
+
+        /* Nav dot hover state */
+        .nav-dot:hover {
+            transform: scale(1.3);
+            background: linear-gradient(135deg, 
+                rgba(0, 255, 127, 0.4) 0%,
+                rgba(34, 197, 94, 0.3) 100%);
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+            border-color: rgba(0, 255, 127, 0.6);
+        }
+
+        /* Active nav dot styling */
+        .nav-dot.active {
+            background: linear-gradient(135deg, 
+                rgba(0, 255, 127, 0.5) 0%,
+                rgba(34, 197, 94, 0.4) 100%);
+            transform: scale(1.4);
+            box-shadow: 0 0 20px rgba(0, 255, 127, 0.6);
+            border-color: rgba(0, 255, 127, 0.8);
+        }
+
+        /* Active nav dot inner glow */
+        .nav-dot.active::before {
+            background: rgba(0, 255, 127, 1);
+            width: 6px;
+            height: 6px;
+            box-shadow: 0 0 12px rgba(0, 255, 127, 0.8);
+        }
+
+        /* Nav tooltip styling */
+        .nav-tooltip {
+            position: absolute;
+            right: calc(100% + 20px);
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            color: white;
+            padding: 0.6rem 1rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 400;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Tooltip show on hover */
+        .nav-dot:hover .nav-tooltip {
+            opacity: 1;
+            transform: translateY(-50%) translateX(-8px);
+        }
+
+        /* Mobile-First Section Layout - Centered styling */
+        section {
+            min-height: 100vh;
+            padding: clamp(2rem, 5vh, 4rem) clamp(1rem, 4vw, 2rem);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            opacity: 0;
+            transform: translateY(60px);
+            transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 1;
+        }
+
+        /* Section visible state */
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Section container for content alignment */
+        .section-container {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(2rem, 4vh, 3rem);
+            text-align: center;
+        }
+
+        /* Image half styling - Top on mobile */
+        .image-half {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        /* Image container styling */
+        .image-container {
+            position: relative;
+            width: clamp(280px, 70vw, 400px);
+            height: clamp(320px, 60vh, 450px);
+            margin: 0 auto clamp(1rem, 2vh, 1.5rem);
+            border: none;
+            background: transparent;
+            animation: subtleFloat 6s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Silhouette image styling */
+        .silhouette {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: all 0.6s ease;
+            filter: contrast(1.1) brightness(1.05);
+            background: transparent;
+        }
+
+        /* Subtle floating animation for images */
+        @keyframes subtleFloat {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-8px) scale(1.02);
+            }
+        }
+
+        /* Section title styling below image */
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 400;
+            font-style: italic;
+            text-align: center;
+            letter-spacing: clamp(1px, 0.2vw, 2px);
+            background: linear-gradient(135deg, 
+                #1a1a1a 0%, #4a4a4a 25%, #2d2d2d 50%, #1a1a1a 75%, #4a4a4a 100%);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: textShimmer 6s ease-in-out infinite;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Title visible state in section */
+        section.visible .section-title {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Text shimmer animation define karna */
+        @keyframes textShimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Text half styling - Bottom on mobile */
+        .text-half {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Text container glass effect */
+        .text-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(60px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            padding: clamp(2rem, 4vw, 3rem);
+            box-shadow: var(--shadow-soft);
+            max-width: 500px;
+            width: 100%;
+            transition: all 0.6s ease;
+            text-align: center;
+            margin: 0 auto;
+        }
+
+        /* Text container hover effect */
+        .text-container:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-medium);
+            border-color: rgba(255, 255, 255, 1);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Paragraph styling inside text container */
+        .text-container p {
+            font-size: clamp(1rem, 2.2vw, 1.3rem);
+            line-height: 1.7;
+            color: rgba(0, 0, 0, 0.85);
+            font-weight: 400;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.6s;
+        }
+
+        /* Paragraph visible state */
+        section.visible .text-container p {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Floating hearts styling with proper z-index */
+        .heart-particles {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            width: 36px;
+            height:36px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 100; /* High z-index to ensure visibility above all content */
+        }
+
+        /* Heart shape styling */
+        .heart {
+            position: absolute;
+            width: 22px;
+            height: 18px;
+            transform: rotate(45deg);
+            animation: heartFloatModern 7s ease-in-out infinite;
+        }
+          
+        /* Heart lobes using pseudo elements */
+        .heart::before,
+        .heart::after {
+            content: '';
+            position: absolute;
+            top: 7px;
+            left: 16px;
+            width: 18px;
+            height: 25px;
+            background: linear-gradient(135deg, #ff85a1, #ff4d88);
+            box-shadow: 0 0 15px 2px rgba(255, 107, 129, 0.6);
+            border-radius: 50% 50% 0 0;
+        }
+          
+        /* First lobe of heart */
+        .heart::before {
+            transform: rotate(-45deg);
+            transform-origin: 0 100%; 
+            box-shadow: 0 0 15px 2px rgba(255, 77, 136, 0.6);
+        }
+          
+        /* Second lobe of heart */
+        .heart::after {
+            left: 0;
+            transform: rotate(45deg);
+            transform-origin: 100% 100%;
+            box-shadow: 0 0 15px 2px rgba(255, 77, 136, 0.6);
+        }
+        
+        /* Heart float animation define karna */
+        @keyframes heartFloatModern {
+            0%, 100% {
+                transform: translateY(0) scale(0.5) rotate(-90deg);
+                opacity: 1;
+            }
+            25% {
+                transform: rotate(45deg) translate(-25px, -35px) scale(1) rotate(-20deg);
+                opacity: 0.7;
+            }
+            50% {
+                transform: rotate(45deg) translate(35px, -70px) scale(1.2) rotate(20deg);
+                opacity: 0.9;
+            }
+            75% {
+                transform: translateY(-400px) translateX(-40px) scale(0.9) rotate(-10deg);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-800px) translateX(20px) scale(0.5) rotate(-30deg);
+                opacity: 0;
+            }
+        }
+
+        /* Desktop layout - Side by side for larger screens */
+        @media (min-width: 768px) {
+            .section-container {
+                flex-direction: row;
+                align-items: stretch;
+                gap: clamp(3rem, 6vw, 5rem);
+            }
+
+            .image-half,
+            .text-half {
+                width: 50%;
+            }
+
+            .image-half {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .text-half {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .image-container {
+                width: clamp(300px, 35vw, 450px);
+                height: clamp(350px, 40vh, 500px);
+            }
+        }
+
+        /* Continue section styling */
+        .continue-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: clamp(4rem, 10vh, 8rem) clamp(2rem, 8vw, 8rem);
+            opacity: 0;
+            transform: translateY(60px);
+            transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* Continue section visible state */
+        .continue-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Continue message styling */
+        .continue-message {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-weight: 300;
+            margin-bottom: 3rem;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #4fc3f7 50%, #29b6f6 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: textShimmer 5s ease-in-out infinite;
+            letter-spacing: 2px;
+        }
+
+        /* Continue button styling */
+        .continue-btn {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            padding: clamp(1.2rem, 3vh, 1.8rem) clamp(2.5rem, 6vw, 4rem);
+            font-size: clamp(1rem, 2.5vw, 1.4rem);
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 1px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        /* Button pseudo element for hover gradient */
+        .continue-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(79, 195, 247, 0.3), rgba(41, 182, 246, 0.3));
+            transition: left 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: -1;
+        }
+
+        /* Button hover effect */
+        .continue-btn:hover {
+            transform: translateY(-6px) scale(1.05);
+            box-shadow: var(--shadow-medium);
+            border-color: rgba(79, 195, 247, 0.5);
+        }
+
+        .continue-btn:hover::before {
+            left: 0;
+        }
+
+        /* Button active state */
+        .continue-btn:active {
+            transform: translateY(-3px) scale(1.02);
+        }
+
+        /* Scroll indicator styling */
+        .scroll-indicator {
+            position: fixed;
+            bottom: clamp(2rem, 5vh, 4rem);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            opacity: 0.7;
+            transition: opacity 1s ease;
+        }
+
+        /* Scroll indicator line */
+        .scroll-indicator::before {
+            content: '';
+            display: block;
+            width: 2px;
+            height: 40px;
+            background: linear-gradient(to bottom,
+                transparent 0%,
+                rgba(255, 255, 255, 0.4) 30%,
+                rgba(255, 255, 255, 0.8) 50%,
+                rgba(255, 255, 255, 0.4) 70%,
+                transparent 100%);
+            margin: 0 auto 12px;
+            border-radius: 2px;
+        }
+
+        /* Scroll indicator arrow */
+        .scroll-indicator::after {
+            content: '↓';
+            display: block;
+            text-align: center;
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.7);
+            animation: bounceModern 2.5s infinite;
+        }
+
+        /* Bounce animation for scroll indicator */
+        @keyframes bounceModern {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-6px); }
+            60% { transform: translateY(-3px); }
+        }
+
+        /* Responsive adjustments for medium screens */
+        @media (max-width: 768px) {
+            .nav-modern {
+                right: 1rem;
+                padding: 1rem 0.8rem;
+                gap: 1rem;
+            }
+            
+            .nav-tooltip {
+                display: none;
+            }
+        }
+
+        /* Responsive adjustments for small screens */
+        @media (max-width: 480px) {
+            .nav-modern {
+                right: 0.8rem;
+                padding: 0.8rem 0.6rem;
+            }
+            
+            .nav-dot {
+                width: 10px;
+                height: 10px;
+            }
+        }
+
+        /* Performance optimizations for elements */
+        .silhouette,
+        .image-container,
+        .orb,
+        section,
+        .text-container {
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            will-change: transform;
+        }
+    </style>
+</head>
+<body>
+    <!-- Enhanced Gradient Background System container -->
+    <div class="gradient-overlay" id="gradientOverlay"></div>
+
+    <!-- Magical light orbs container -->
+    <div class="light-orbs" id="orbsContainer"></div>
+
+    <!-- Modern Navigation structure -->
+    <div class="nav-modern">
+        <div class="nav-dot" data-section="krishna">
+            <div class="nav-tooltip">The Birth of Melody</div>
+        </div>
+        <div class="nav-dot" data-section="radha">
+            <div class="nav-tooltip">The Lotus Awakens</div>
+        </div>
+        <div class="nav-dot" data-section="union">
+            <div class="nav-tooltip">The Divine Dance</div>
+        </div>
+        <div class="nav-dot" data-section="eternal">
+            <div class="nav-tooltip">Beyond the Scroll</div>
+        </div>
+        <div class="nav-dot" data-section="continue">
+            <div class="nav-tooltip">Continue Journey</div>
+        </div>
+    </div>
+
+    <!-- Scroll indicator element -->
+    <div class="scroll-indicator"></div>
+
+    <!-- Krishna section with data-bg for gradient -->
+    <section id="krishna" data-bg="linear-gradient(180deg, #87ceeb 0%, #f0f8ff 50%, #e6f3ff 100%)">
+        <div class="radial-blur"></div>
+        <div class="heart-particles">
+            <div class="heart" style="animation-delay: 0s;"></div>
+            <div class="heart" style="animation-delay: 2s;"></div>
+            <div class="heart" style="animation-delay: 4s;"></div>
+        </div>
+        <div class="section-container">
+            <div class="image-half">
+                <div class="image-container">
+                    <img class="silhouette" src="krishna1.png" alt="Krishna Silhouette">
+                </div>
+                <h2 class="section-title">The Flute That Birthed the Stars</h2>
+            </div>
+            <div class="text-half">
+                <div class="text-container">
+                  <p>
+                    In stillness, he stands... flute in hand, lips poised at infinity.<br>
+                    From that first breath of music, the cosmos stirred, and time bent to listen.<br>
+                    Every note? A spark. Every silence? A hymn.<br>
+                    Thus began the song that shaped the stars.
+                </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Radha section -->
+    <section id="radha" data-bg="linear-gradient(180deg, #fbc2eb 0%, #f8c7dc 50%, #f5d0e0 100%)">
+        <div class="radial-blur"></div>
+        <div class="heart-particles">
+            <div class="heart" style="animation-delay: 1s;"></div>
+            <div class="heart" style="animation-delay: 3s;"></div>
+            <div class="heart" style="animation-delay: 5s;"></div>
+        </div>
+        <div class="section-container">
+            <div class="image-half">
+                <div class="image-container">
+                    <img class="silhouette" src="radha.png" alt="Radha Silhouette">
+                </div>
+                <h2 class="section-title">She Who Listened to the Song Before Sound</h2>
+            </div>
+            <div class="text-half">
+                <div class="text-container">
+                  <p>
+                    She didn’t arrive... the world bloomed around her.<br>
+                    Each glance, a petal. Each breath, a prayer.<br>
+                    Drawn not by words, but by the song only the soul can hear...<br>
+                    the eternal echo of Krishna’s call.
+                </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Union section -->
+    <section id="union" data-bg="linear-gradient(180deg, #a18cd1 0%, #fbc2eb 50%, #e8b5d6 100%)">
+        <div class="radial-blur"></div>
+        <div class="heart-particles">
+            <div class="heart" style="animation-delay: 0.5s;"></div>
+            <div class="heart" style="animation-delay: 2.5s;"></div>
+            <div class="heart" style="animation-delay: 4.5s;"></div>
+        </div>
+        <div class="section-container">
+            <div class="image-half">
+                <div class="image-container">
+                    <img class="silhouette" src="radhekrishna.png" alt="Divine Dance">
+                </div>
+                <h2 class="section-title">Where Time Learned to Breathe</h2>
+            </div>
+            <div class="text-half">
+                <div class="text-container">
+                  <p>
+                    Their eyes met, and the universe paused... not to watch, but to remember.<br>
+                    In every twirl, a scripture. In every glance, a galaxy reborn.<br>
+                    This wasn’t love. This was remembrance...<br>
+                    of two eternal souls dancing the rhythm of all things unseen.
+                </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Eternal section -->
+    <section id="eternal" data-bg="linear-gradient(180deg, #b0e0e6 0%, #fff8dc 50%, #f0f8e6 100%)">
+        <div class="radial-blur"></div>
+        <div class="heart-particles">
+            <div class="heart" style="animation-delay: 1.5s;"></div>
+            <div class="heart" style="animation-delay: 3.5s;"></div>
+            <div class="heart" style="animation-delay: 5.5s;"></div>
+        </div>
+        <div class="section-container">
+            <div class="image-half">
+                <div class="image-container">
+                    <img class="silhouette" src="jhula.png" alt="Eternal Bond">
+                </div>
+                <h2 class="section-title">The Echo After Forever</h2>
+            </div>
+            <div class="text-half">
+                <div class="text-container">
+                  <p>
+                    Their story never needed ink... it wrote itself into wind and starlight.<br>
+                    Not every ending closes. Some become echoes.<br>
+                    And in the hush between heartbeats,<br>
+                    they remain... not as memory, but as presence.<br>
+                    Eternal. Undivided. Unseen, yet unmistakably felt.
+                </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Continue section -->
+    <section id="continue" class="continue-section" data-bg="linear-gradient(180deg, #4fc3f7 0%, #e1f5fe 50%, #f0f9ff 100%)">
+        <div class="continue-message">Where Flute Leads, You Follow...</div>
+        <button class="continue-btn" onclick="handleContinue()">Continue</button>
+    </section>
+
+    <!-- Inline JavaScript script start karna -->
+    <script>
+        // DivineLoveExperience class define karna for managing page effects
+        class DivineLoveExperience {
+            constructor() {
+                // Elements ko select aur store karna
+                this.sections = document.querySelectorAll('section');
+                this.orbsContainer = document.getElementById('orbsContainer');
+                this.scrollIndicator = document.querySelector('.scroll-indicator');
+                this.navDots = document.querySelectorAll('.nav-dot');
+                this.gradientOverlay = document.getElementById('gradientOverlay');
+                
+                // Init function call karna
+                this.init();
+            }
+
+            // Initialization methods ko call karna
+            init() {
+                this.createOrbs();
+                this.setupScrollAnimations();
+                this.setupNavigation();
+                this.setupGradientBackgrounds();
+                this.hideScrollIndicator();
+                this.addImageLoadEffects();
+            }
+
+            // Light orbs create karna
+            createOrbs() {
+                const orbCount = window.innerWidth < 768 ? 6 : 12;
+                
+                for (let i = 0; i < orbCount; i++) {
+                    const orb = document.createElement('div');
+                    orb.className = 'orb';
+                    orb.style.left = Math.random() * 100 + '%';
+                    orb.style.top = Math.random() * 100 + '%';
+                    orb.style.animationDelay = Math.random() * 22 + 's';
+                    orb.style.animationDuration = (18 + Math.random() * 10) + 's';
+                    this.orbsContainer.appendChild(orb);
+                }
+            }
+
+            // Gradient backgrounds setup karna with crossfade
+            setupGradientBackgrounds() {
+                // Crossfade ke liye two overlays create karna
+                let currentOverlay = document.createElement('div');
+                let nextOverlay = document.createElement('div');
+
+                currentOverlay.style.cssText = nextOverlay.style.cssText = `
+                    position:absolute;top:0;left:0;width:100%;height:100%;z-index:-1;
+                    transition:opacity 1.5s ease-in-out;opacity:1;
+                `;
+
+                this.gradientOverlay.appendChild(currentOverlay);
+                this.gradientOverlay.appendChild(nextOverlay);
+
+                let lastGradient = '';
+
+                // Gradient crossfade function
+                const crossfadeToGradient = (gradient) => {
+                    nextOverlay.style.background = gradient;
+                    nextOverlay.style.opacity = '0';
+                    setTimeout(() => {
+                        nextOverlay.style.opacity = '1';
+                        currentOverlay.style.opacity = '0';
+                        [currentOverlay, nextOverlay] = [nextOverlay, currentOverlay];
+                    }, 10);
+                };
+
+                // Initial gradient set karna
+                const firstGradient = document.querySelector('section').getAttribute('data-bg');
+                currentOverlay.style.background = firstGradient;
+                lastGradient = firstGradient;
+
+                // Scroll par gradient change handle karna
+                window.addEventListener('scroll', () => {
+                    let current = null;
+                    const midpoint = window.scrollY + window.innerHeight / 2;
+                    
+                    this.sections.forEach(section => {
+                        const top = section.offsetTop;
+                        const bottom = top + section.offsetHeight;
+                        if (midpoint >= top && midpoint < bottom) {
+                            current = section;
+                        }
+                    });
+
+                    if (current) {
+                        const gradient = current.getAttribute('data-bg');
+                        if (gradient !== lastGradient) {
+                            crossfadeToGradient(gradient);
+                            lastGradient = gradient;
+                        }
+                    }
+                }, { passive: true });
+            }
+
+            // Navigation setup karna with click and scroll events
+            setupNavigation() {
+                this.navDots.forEach(dot => {
+                    dot.addEventListener('click', () => {
+                        const targetSection = dot.getAttribute('data-section');
+                        const section = document.getElementById(targetSection);
+                        if (section) {
+                            section.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    });
+                });
+
+                // Scroll par active dot update karna
+                window.addEventListener('scroll', () => {
+                    const scrollPosition = window.pageYOffset + window.innerHeight / 2;
+                    
+                    this.sections.forEach((section, index) => {
+                        const sectionTop = section.offsetTop;
+                        const sectionBottom = sectionTop + section.offsetHeight;
+                        
+                        if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+                            this.navDots.forEach(dot => dot.classList.remove('active'));
+                            if (this.navDots[index]) {
+                                this.navDots[index].classList.add('active');
+                            }
+                        }
+                    });
+                }, { passive: true });
+            }
+
+            // Scroll animations setup karna using IntersectionObserver
+            setupScrollAnimations() {
+                const observerOptions = {
+                    threshold: 0.15,
+                    rootMargin: '0px 0px -10% 0px'
+                };
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            
+                            // Heart animation trigger karna with delay
+                            setTimeout(() => {
+                                this.triggerHeartAnimation(entry.target);
+                            }, 600);
+                        }
+                    });
+                }, observerOptions);
+
+                this.sections.forEach(section => {
+                    observer.observe(section);
+                });
+            }
+
+            // Heart animation trigger karna in section
+            triggerHeartAnimation(section) {
+                const hearts = section.querySelectorAll('.heart');
+                hearts.forEach((heart, index) => {
+                    setTimeout(() => {
+                        heart.style.animationPlayState = 'running';
+                    }, index * 150);
+                });
+            }
+
+            // Scroll indicator hide karna after first scroll
+            hideScrollIndicator() {
+                let hasScrolled = false;
+                window.addEventListener('scroll', () => {
+                    if (!hasScrolled && window.pageYOffset > 100) {
+                        this.scrollIndicator.style.opacity = '0';
+                        hasScrolled = true;
+                    }
+                }, { passive: true });
+            }
+
+            // Image load par effects add karna
+            addImageLoadEffects() {
+                const images = document.querySelectorAll('.silhouette');
+                images.forEach(img => {
+                    img.addEventListener('load', () => {
+                        img.style.filter += ' saturate(110%)';
+                    });
+                });
+            }
+        }
+
+        // Continue button ke liye function define karna
+        function handleContinue() {
+            window.location.href = 'polaroid_wall.html';
+        }
+
+        // DOM load hone par experience initialize karna
+        document.addEventListener('DOMContentLoaded', () => {
+            new DivineLoveExperience();
+        });
+
+        // Performance optimization for critical elements
+        document.addEventListener('DOMContentLoaded', () => {
+            // Critical elements ko preload aur optimize karna
+            const criticalElements = document.querySelectorAll('section, .image-container, .silhouette, .text-container');
+            criticalElements.forEach(el => {
+                el.style.transform = 'translateZ(0)';
+            });
+        });
+    </script>
+</body>
+</html>

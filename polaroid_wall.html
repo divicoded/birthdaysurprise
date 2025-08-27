@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Polaroid Wall...The Memories</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  /* Reset & base */
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none}
+  html,body{height:100%}
+  body{
+    font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;
+    color:#082035;
+    min-height:100vh;
+    overflow-x:hidden;
+    background:linear-gradient(135deg,#f8fbff 0%,#e9f5ff 100%);
+  }
+
+  /* Background layers for crossfade (light / blue-only palettes) */
+  .bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;transition:opacity 900ms cubic-bezier(.2,.9,.2,1);will-change:opacity,background}
+  .bg-bottom{opacity:1}
+  .bg-top{opacity:0}
+
+  /* Container & header */
+  .container{position:relative;z-index:3;max-width:1400px;margin:0 auto;padding:120px 20px 160px}
+  .header-wrap{position:fixed;left:50%;transform:translateX(-50%);top:18px;z-index:1005;display:flex;flex-direction:column;align-items:center;gap:8px}
+
+  /* Animated heading "The Memories" */
+  .title {
+    display:flex;gap:6px;padding:8px 14px;border-radius:14px;background:rgba(255,255,255,0.94);
+    box-shadow:0 10px 30px rgba(4,40,70,0.06);align-items:center;font-weight:800;
+    font-family:Poppins, Inter; font-size:20px; letter-spacing:0.6px; color:#08345a;
+  }
+  .title .char{display:inline-block;will-change:transform;transform-origin:center}
+  @keyframes floaty { 0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)} }
+
+  .controls{display:flex;gap:8px;background:rgba(255,255,255,0.94);padding:6px;border-radius:14px;box-shadow:0 10px 30px rgba(4,40,70,0.06)}
+  .control-btn{background:transparent;border:none;padding:8px 12px;border-radius:10px;font-weight:700;cursor:pointer;color:#0b5fb3}
+
+  /* Tag filter */
+  .tag-filter{position:fixed;left:50%;transform:translateX(-50%);top:74px;display:flex;gap:10px;padding:10px;border-radius:12px;background:rgba(255,255,255,0.96);backdrop-filter:blur(6px);z-index:1000;box-shadow:0 12px 30px rgba(4,40,70,0.06);flex-wrap:wrap}
+  .tag{padding:8px 12px;border-radius:10px;background:rgba(16,107,183,0.06);color:#0f67a1;font-weight:700;cursor:pointer;border:1px solid rgba(16,107,183,0.08)}
+  .tag.active{background:linear-gradient(135deg,#1976d2,#2196f3);color:#fff;box-shadow:0 6px 18px rgba(25,118,210,0.12)}
+
+  /* Wall & polaroid card */
+  .wall{position:relative;min-height:600px;margin-top:6px;z-index:2}
+  .polaroid{
+    position:absolute;background:#fff;border-radius:12px;padding:12px 12px 52px 12px;
+    box-shadow:0 14px 40px rgba(6,24,44,0.08),0 3px 12px rgba(6,24,44,0.04);
+    transform-origin:center center;transition:box-shadow 200ms ease, transform 260ms cubic-bezier(.2,.9,.2,1);
+    touch-action:none;cursor:grab;will-change:transform,left,top;z-index:10;backface-visibility:hidden;
+    border:1px solid rgba(12,34,66,0.04);
+  }
+  .polaroid.dragging{cursor:grabbing;box-shadow:0 30px 80px rgba(6,24,44,0.14);transition:none}
+  /* inner wrapper for flipping so outer rotation isn't stomped */
+  .polaroid-inner{transition:transform 420ms cubic-bezier(.2,.9,.2,1);transform-style:preserve-3d;position:relative}
+  .polaroid-inner .face{backface-visibility:hidden;min-height:0}
+  .front-face{}
+  .back-face{position:absolute;inset:0;padding:16px;border-radius:10px;background:linear-gradient(180deg,#fff,#f6fbff);transform:rotateY(180deg)}
+  .polaroid-inner.flipped{transform:rotateY(180deg)}
+  .polaroid .photo-container{overflow:hidden;border-radius:8px;background:linear-gradient(180deg,#fbfdff,#f0f7ff);border:1px solid rgba(0,0,0,0.04);position:relative}
+  .photo{width:100%;height:auto;display:block;object-fit:cover;pointer-events:none;-webkit-user-drag:none}
+  .caption{font-family:Poppins,Inter;margin-top:10px;text-align:center;font-weight:700;font-size:clamp(12px,2.2vw,14px);color:#09385a}
+  .note{font-size:14px;color:#0b2545;line-height:1.45;border-radius:8px;padding:10px;background:rgba(255,255,255,0.92);box-shadow:inset 0 1px 0 rgba(255,255,255,0.6)}
+  .date{align-self:flex-end;padding:6px 10px;border-radius:8px;background:rgba(25,118,210,0.08);font-weight:700;color:#1976d2}
+  .polaroid.flipped{ /* optional hook */ }
+  /* size classes */
+  .polaroid.portrait{width:clamp(150px,18vw,240px)}
+  .polaroid.landscape{width:clamp(180px,30vw,360px)}
+  .polaroid.square{width:clamp(160px,22vw,300px)}
+  /* Continue button */
+  .continue-btn{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:linear-gradient(135deg,#1976d2,#2196f3);color:#fff;padding:14px 30px;border-radius:44px;font-weight:800;border:none;cursor:pointer;z-index:1002;box-shadow:0 12px 36px rgba(25,118,210,0.24)}
+  .continue-btn.pressed{transform:translateX(-50%) scale(0.96)}
+  /* modal / lightbox */
+  .lightbox{position:fixed;inset:0;background:rgba(10,18,30,0.72);display:none;align-items:center;justify-content:center;z-index:1200;padding:24px}
+  .lightbox.open{display:flex}
+  .lightbox img{max-width:90%;max-height:90%;border-radius:12px;box-shadow:0 22px 60px rgba(2,10,30,0.6)}
+  /* startup & overlay */
+  .overlay{position:fixed;inset:0;background:rgba(255,255,255,0.12);backdrop-filter:blur(6px);z-index:1290;display:none}
+  .startup{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:#fff;padding:16px 18px;border-radius:12px;z-index:1300;max-width:540px;box-shadow:0 20px 60px rgba(15,76,129,0.12)}
+  .startup .title{font-weight:800;font-size:18px;margin-bottom:8px}
+  .startup .lines{margin:6px 0;color:#234f79;line-height:1.4}
+  .startup .row{display:flex;gap:8px;margin-top:12px;justify-content:flex-end}
+  /* responsive */
+  @media (max-width:900px){ .container{padding:96px 12px 110px} .header-wrap{top:10px} .tag-filter{top:80px} }
+  @media (max-width:520px){ .title{font-size:16px;padding:6px 10px} .tag-filter{top:92px} }
+</style>
+</head>
+<body>
+  <!-- Background gradient layers (light-only) -->
+  <div id="bgBottom" class="bg-layer bg-bottom"></div>
+  <div id="bgTop" class="bg-layer bg-top"></div>
+
+  <!-- overlay to blur content when startup is shown -->
+  <div id="overlay" class="overlay"></div>
+
+  <div class="header-wrap">
+    <div class="title" id="animatedTitle" aria-hidden="false"></div>
+    <div class="controls" role="toolbar">
+      <button id="tagToggle" class="control-btn" aria-expanded="false">🏷️ Filter</button>
+      <button id="gridToggle" class="control-btn">🔀 Masonry</button>
+    </div>
+  </div>
+
+  <div class="tag-filter" id="tagFilter">
+    <div class="tag active" data-tag="all">All</div>
+    <div class="tag" data-tag="love">Love</div>
+    <div class="tag" data-tag="friends">Friends</div>
+    <div class="tag" data-tag="trip">Trip</div>
+  </div>
+
+  <div class="container">
+    <div id="wall" class="wall" aria-live="polite" aria-label="Polaroid wall"></div>
+    <button id="continueBtn" class="continue-btn">Continue</button>
+  </div>
+
+  <!-- Lightbox for double-click enlarge -->
+  <div id="lightbox" class="lightbox" aria-hidden="true">
+    <img id="lightboxImg" src="" alt="Enlarged photo">
+  </div>
+
+  <!-- Short startup guide (no "don't show again") -->
+  <div id="startup" class="startup" style="display:none">
+    <div class="title">Quick guide</div>
+    <div class="lines">• Drag cards to rearrange... they snap when released.</div>
+    <div class="lines">• Click to flip a card; click again to return to front.</div>
+    <div class="lines">• Double-click to view full-size.</div>
+    <div class="row">
+      <button id="startOk" style="padding:8px 12px;border-radius:8px;background:linear-gradient(135deg,#1976d2,#2196f3);color:#fff;border:none;cursor:pointer">Got it</button>
+    </div>
+  </div>
+
+<script>
+/* =========================
+   Photo data
+   ========================= */
+const photos = [
+  {id:1,src:"https://lh3.googleusercontent.com/pw/AP1GczMIuTmyIkTDbL0qo7qpWNuABwPCKEISP8iUNCGxmbP0DPvKGfytZJ806mk-bHVoDf37imsvr6QUWFRHr4arLavQ2fCklP0ATyr4u4hKcRTYtVYiz88IbWyCgDxGhhf6xPnpx5_6eCJuPS2P_AylODVP=w488-h650-s-no-gm?authuser=0",caption:"Elegance isn't an outfit. It's your default setting 😍",note:"y isn't it working out?",date:"February 7, 2025",tags:["love","friends"],position:{x:50,y:80},rotation:5,ratio:"portrait"},
+  {id:2,src:"https://lh3.googleusercontent.com/pw/AP1GczPCa8L2uVEr5ErZRJejNpHNQ13WRDtfO-YVvIlODHFSKN4bQLIHivQPYItcs5Hc1fL02jGSA7RiMCl_ulTFtorLPM9eaPPlhb_TzLuHLyg9P0VYF3FBR2ISwQGYk9bcZUtUU5S57PHCojZ5meEBSP4B=w487-h650-s-no-gm?authuser=0",caption:"Happy Ending? 🤔",note:"hmmm... Every story’s better when you’re in it.",date:"February 7, 2025",tags:["love"],position:{x:300,y:120},rotation:-3,ratio:"square"},
+  {id:3,src:"https://lh3.googleusercontent.com/pw/AP1GczOx25KlKyRb2I4QW2WsOeogwDakRW9jcblTfvVgUm3yEC1Vgz71dT-0x07WaK1oBRbkAsen6ATCJCaaDCkDWdgWnJaZRUrDbijMddxqLa2476KTWyjXqVU9Jrulq0DlwbPhQu2o1zL5tmWf6Cib9UFN=w487-h650-s-no-gm?authuser=0",caption:"kafi jaldi YES bol diya....🎀",note:"Yehi dekhna reh gaya tha inn aankhon se ab 😭",date:"February 7, 2025",tags:["love"],position:{x:80,y:350},rotation:7,ratio:"landscape"},
+  {id:4,src:"https://lh3.googleusercontent.com/pw/AP1GczNyQqaRkHGezCWlvhOm2c1T6y47TczVgRR8-wD8jPAAgOwdRBo77uixct_JP9EJYIGcYbc8GkxAZ-QYM6Ff7in5UNzCxvqEYleLzd6Wng4HVfKc0e6v87_vcjEF0nNswwqOSsnRDMf4fCyZGzhoSVS8=w366-h650-s-no-gm?authuser=0",caption:"Itni sundar hone ke baad bhi face chhupana... galat 😣",note:"😍 Beauty this rare deserves the spotlight",date:"November 14, 2024",tags:["trip"],position:{x:400,y:60},rotation:-5,ratio:"portrait"},
+  {id:5,src:"https://lh3.googleusercontent.com/pw/AP1GczMqiwiD08Yn2aYPqoNWUFcM-ClYakJvK0MlDT2ymdjfC3fPgytImtAXWkJYP32Y7u8Br_LTzWUMmQ8FT9fgsU8ZJFN_iFc4xF2AUgjj_MpK2LRBLY9fbkV1ziZuZNbgo2itYLPDNxXut6XnixiVaD_7=w712-h534-s-no-gm?authuser=0",caption:"ye dono bodyguards bhi frame main aa gaye...😶",note:"Hehe... isse zyaada kaha toh ye dono peeth denge",date:"November 14, 2024",tags:["trip","friends"],position:{x:200,y:280},rotation:3,ratio:"landscape"},
+  {id:6,src:"https://lh3.googleusercontent.com/pw/AP1GczPRI85zsCrYDQI1_9Ig3vWNbmgWxEiiU10nPvCIUogfVgeNThuAjp8vSAi3_SxD2kuk56cxYJnMmYQcCpFS9kN3q_ytc1l98laichewXoNrXUL-TSlMIo3-owpZPV0YDHwQvRcJuCHii8DGIQUvfDl5=w848-h650-s-no-gm?authuser=0",caption:"thoda sa smile bhi nhi gaya mujhse..😭😭 ",note:"😥",date:"February 7, 2025",tags:["friends"],position:{x:150,y:180},rotation:-7,ratio:"landscape"},
+  {id:7,src:"https://lh3.googleusercontent.com/pw/AP1GczNE8cj1YJAcX8DQu8q_c6Vdc6Ps0TN4U8FMB0WDqxLiScECmpQyncDCsk1EvfWYru3wTQtWnrHhumli6dU9Swevxtq_yTJ7eZGDexYM8Bokod7GoRl87HmhIky77d7_xMtgBy1kLSpLHlxWTZA4sHCd=w487-h650-s-no-gm?authuser=0",caption:"aesthetic pose?",note:"Serving looks since forever",date:"Ongoing",tags:["love","friends"],position:{x:450,y:250},rotation:2,ratio:"portrait"},
+  {id:8,src:"https://lh3.googleusercontent.com/pw/AP1GczPNm_V499qRir3JlW812ToZ4FzRWoq-zKq588sLGfUW6GWiAQ-7-oNY5HHPdlFB-VXtvkXxnqnGzcrI3UGSQYAZk0AQkeONUzlF4FhCrQJqrj6ewaiC5E8RNe1pQLzA9BnF3FjqPEfYG2QxATHXT5iy=w522-h650-s-no-gm?authuser=0",caption:"Kaafi dukhad vrttaant hai iss tasveer ke peeche...",note:"😅",date:"choro kyu yaad rakhna hai ye date",tags:["friends"],position:{x:320,y:380},rotation:-4,ratio:"landscape"},
+  {id:9,src:"https://lh3.googleusercontent.com/pw/AP1GczNp8YORCx_c_ZCgyjv602RpikSGgpBUfGSd-C_FajlEbrgtkYEjOTJ0uUv98Il-jN7thmsRy_40Kxu6ur6Hw8z5FE0F4jRGQJAqYlbtLloTGH3xcbJOLJ-7sP7USHnLnLeW-YM55DAG_aSRN_Stx6m4=w649-h650-s-no-gm?authuser=0",caption:"best artwork...2nd best?",note:"😅 If this is second best, I’m scared to see first.",date:"ss main date aya hi nhi",tags:["love"],position:{x:400,y:380},rotation:-9,ratio:"square"},
+  {id:10,src:"paperChibi.png",caption:"maybe aur photos lagne chahiye the?",note:"😅",date:"hmm?",tags:["friends"],position:{x:580,y:380},rotation:4,ratio:"portrait"},
+  {id:11,src:"https://lh3.googleusercontent.com/pw/AP1GczN58d3Uxds1ltg3rC8NxjinqgvyMOjRo5HC-ckYIlTzQF4jGWz25MOTesH_8H4RlIARR6T7XakFM0MrBQYxSGZP_692KEQL4pk4vvFMuQDhPwsfg-tFWFNr-4-jTevYzDFHZWhOalt38yTccSeWSCjs=w480-h483-s-no-gm?authuser=0",caption:"best artwork...❤🤩..1st place",note:"😅 Just love every detail...",date:"July 27, 2025, 6:15 PM",tags:["love"],position:{x:580,y:380},rotation:9,ratio:"square"}
+];
+
+/* =========================
+   State & UI references
+   ========================= */
+const wall = document.getElementById('wall');
+const tagFilter = document.getElementById('tagFilter');
+const tagToggle = document.getElementById('tagToggle');
+const gridToggle = document.getElementById('gridToggle');
+const continueBtn = document.getElementById('continueBtn');
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const bgTop = document.getElementById('bgTop'), bgBottom = document.getElementById('bgBottom');
+const overlay = document.getElementById('overlay');
+const startup = document.getElementById('startup');
+const startOk = document.getElementById('startOk');
+const animatedTitle = document.getElementById('animatedTitle');
+
+let activeFilter = 'all';
+let masonryMode = true; // true = river/masonry aligned (no rotation), false = freeform (scattered + rot)
+let zCounter = 1000;
+let columnGap = 20;
+let minColWidth = 160;
+
+/* =========================
+   Light-only gradient themes (no dark colors)
+   ========================= */
+const gradientThemes = [
+  "linear-gradient(135deg,#f8fbff 0%,#e9f5ff 100%)",
+  "linear-gradient(135deg,#fffafc 0%,#eaf6ff 100%)",
+  "linear-gradient(135deg,#f7fbff 0%,#e1f2ff 100%)",
+  "linear-gradient(135deg,#ffffff 0%,#eef7ff 100%)",
+  "linear-gradient(135deg,#f3fbff 0%,#dff2ff 100%)"
+];
+let currentThemeIndex = 0;
+bgBottom.style.background = gradientThemes[currentThemeIndex];
+bgTop.style.background = gradientThemes[currentThemeIndex];
+
+/* auto-cycle themes smoothly */
+setInterval(() => {
+  currentThemeIndex = (currentThemeIndex + 1) % gradientThemes.length;
+  const next = gradientThemes[currentThemeIndex];
+  bgTop.style.background = next;
+  bgTop.style.opacity = '1';
+  setTimeout(()=> {
+    bgBottom.style.background = next;
+    bgTop.style.opacity = '0';
+  }, 800);
+}, 6500);
+
+/* =========================
+   Node lifecycle + DOM builder (inner wrapper for flipping)
+   ========================= */
+const nodeMap = new Map();
+function escapeHtml(s=''){ return String(s).replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+
+function buildPolaroidNode(photo){
+  const el = document.createElement('article');
+  el.className = `polaroid ${photo.ratio || ''}`;
+  el.dataset.id = photo.id;
+  el.dataset.modelId = photo.id;
+  el.style.left = '0px'; el.style.top = '0px';
+  el.style.opacity = '0';
+  // inner wrapper with front/back faces
+  el.innerHTML = `
+    <div class="polaroid-inner">
+      <div class="face front-face">
+        <div class="photo-container" style="position:relative;">
+          <img class="photo" src="${photo.src}" alt="${escapeHtml(photo.caption)}" loading="lazy">
+        </div>
+        <div class="caption">${escapeHtml(photo.caption)}</div>
+      </div>
+      <div class="face back-face">
+        <div class="note">${escapeHtml(photo.note)}</div>
+        <div class="date">${escapeHtml(photo.date)}</div>
+      </div>
+    </div>
+  `;
+  el.addEventListener('contextmenu', e => e.preventDefault());
+  return el;
+}
+
+function createPolaroids(){
+  nodeMap.clear();
+  wall.innerHTML = '';
+  const filtered = photos.filter(p=> activeFilter==='all' || p.tags.includes(activeFilter));
+  for (let p of filtered){
+    if (typeof p._randRot !== 'number') p._randRot = (p.rotation ?? (Math.random()*20 - 10));
+    const node = buildPolaroidNode(p);
+    node.style.position = 'absolute';
+    node.style.visibility = 'hidden';
+    wall.appendChild(node);
+    nodeMap.set(p.id, {node, data:p});
+  }
+  requestAnimationFrame(()=> {
+    layoutAll();
+    // fade-in
+    for (let {node} of nodeMap.values()){
+      node.style.transition = 'opacity 520ms cubic-bezier(.2,.9,.2,1), transform 520ms cubic-bezier(.2,.9,.2,1)';
+      node.style.opacity = '1';
+      node.style.visibility = 'visible';
+    }
+    setTimeout(()=> { for (let {node} of nodeMap.values()) node.style.transition=''; }, 620);
+  });
+}
+
+/* =========================
+   Layout: Masonry (river) vs Freeform
+   ========================= */
+function computeCols(containerWidth){
+  let cols = Math.max(1, Math.floor(containerWidth / (minColWidth + columnGap)));
+  return cols;
+}
+
+function layoutAll(){
+  if (masonryMode) layoutMasonry();
+  else layoutFreeform();
+  updateWallHeight();
+  for (let {node,data} of nodeMap.values()){
+    if (!node._eventsAttached) setupPolaroidEvents(node, data);
+    // ensure inner flipping state preserved visually: if node has inner.flipped class keep it
+  }
+}
+
+function layoutMasonry(){
+  const containerWidth = wall.clientWidth;
+  const cols = computeCols(containerWidth);
+  const colWidth = (containerWidth - (cols - 1) * columnGap) / cols;
+  const colHeights = new Array(cols).fill(18);
+  for (let {node,data} of nodeMap.values()){
+    node.style.width = '';
+    let targetWidth = colWidth;
+    if (node.classList.contains('portrait')) targetWidth = Math.max(140, colWidth * 0.9);
+    if (node.classList.contains('square')) targetWidth = Math.max(140, colWidth * 0.95);
+    node.style.width = `${Math.round(targetWidth)}px`;
+    const h = node.offsetHeight;
+    let minCol = 0;
+    for (let i=1;i<cols;i++) if (colHeights[i] < colHeights[minCol]) minCol = i;
+    const x = Math.round(minCol * (colWidth + columnGap));
+    const y = Math.round(colHeights[minCol]);
+    node.style.left = `${x}px`;
+    node.style.top = `${y}px`;
+    // in masonry mode, cards align perfectly with NO rotation on the outer node
+    node.style.transition = 'left 420ms cubic-bezier(.2,.9,.2,1), top 420ms cubic-bezier(.2,.9,.2,1), transform 420ms cubic-bezier(.2,.9,.2,1)';
+    node.style.transform = `rotate(0deg)`;
+    data.position = {x,y};
+    colHeights[minCol] += h + columnGap;
+    // ensure inner flip remains correct visually (no change needed)
+    setTimeout(()=> node.style.transition = '', 500);
+  }
+}
+
+function layoutFreeform(){
+  // scatter or keep stored positions
+  for (let {node,data} of nodeMap.values()){
+    let pos = data.position && typeof data.position.x === 'number' ? data.position : null;
+    if (!pos){
+      const w = node.offsetWidth, h = node.offsetHeight;
+      const x = Math.random() * Math.max(40, wall.clientWidth - w - 40) + 20;
+      const y = Math.random() * 220 + 40;
+      pos = {x:Math.round(x), y:Math.round(y)};
+      data.position = pos;
+    }
+    node.style.left = `${pos.x}px`;
+    node.style.top = `${pos.y}px`;
+    const rot = typeof data._randRot === 'number' ? data._randRot : (data.rotation || (Math.random()*20 - 10));
+    data._randRot = rot;
+    node.style.transition = 'left 520ms cubic-bezier(.2,.9,.2,1), top 520ms cubic-bezier(.2,.9,.2,1), transform 520ms cubic-bezier(.2,.9,.2,1)';
+    node.style.transform = `rotate(${rot}deg)`;
+    setTimeout(()=> node.style.transition = '', 600);
+  }
+}
+
+/* scatter "pile" animation when switching to freeform */
+function scatterPileAnimation(){
+  let i = 0;
+  const entries = Array.from(nodeMap.values());
+  for (let {node,data} of entries){
+    const w = node.offsetWidth, h = node.offsetHeight;
+    const x = Math.random() * Math.max(40, wall.clientWidth - w - 40) + 20;
+    const y = Math.random() * 260 + 40;
+    const rot = Math.random()*28 - 14;
+    // stagger
+    const delay = i * 60;
+    node.style.transition = `left 520ms cubic-bezier(.2,.9,.2,1) ${delay}ms, top 520ms cubic-bezier(.2,.9,.2,1) ${delay}ms, transform 520ms cubic-bezier(.2,.9,.2,1) ${delay}ms`;
+    setTimeout(()=> {
+      node.style.left = `${Math.round(x)}px`;
+      node.style.top = `${Math.round(y)}px`;
+      node.style.transform = `rotate(${rot}deg)`;
+      data.position = {x:Math.round(x), y:Math.round(y)};
+      data._randRot = rot;
+    }, delay);
+    i++;
+  }
+  // remove inline transition after animation
+  setTimeout(()=> { for (let {node} of entries) node.style.transition = ''; updateWallHeight(); }, 600 + entries.length * 60);
+}
+
+/* =========================
+   Wall height
+   ========================= */
+function updateWallHeight(){
+  let maxBottom = 0;
+  for (let {node} of nodeMap.values()){
+    const top = parseFloat(node.style.top || 0);
+    const h = node.offsetHeight;
+    if (top + h > maxBottom) maxBottom = top + h;
+  }
+  wall.style.minHeight = (maxBottom + 160) + 'px';
+}
+
+/* =========================
+   Interactions: pointer drag, flip, dblclick lightbox
+   ========================= */
+function setupPolaroidEvents(node, data){
+  node._eventsAttached = true;
+  let pointerId = null;
+  let startX = 0, startY = 0;
+  let startLeft = 0, startTop = 0;
+  let dragging = false;
+  let moved = false;
+  let dragTx = 0, dragTy = 0;
+  const inner = node.querySelector('.polaroid-inner');
+
+  function getRotationForNode(){
+    return masonryMode ? 0 : (typeof data._randRot === 'number' ? data._randRot : (data.rotation || 0));
+  }
+
+  function applyDragTransform(tx, ty, scale=1.02){
+    const r = getRotationForNode();
+    node.style.transform = `translate3d(${tx}px,${ty}px,0) rotate(${r}deg) scale(${scale})`;
+  }
+
+  node.addEventListener('pointerdown', (ev) => {
+    ev.preventDefault();
+    node.setPointerCapture(ev.pointerId);
+    pointerId = ev.pointerId;
+    startX = ev.clientX;
+    startY = ev.clientY;
+    startLeft = parseFloat(node.style.left || 0);
+    startTop = parseFloat(node.style.top || 0);
+    dragging = false; moved = false; dragTx = 0; dragTy = 0;
+    zCounter++; node.style.zIndex = zCounter;
+  });
+
+  node.addEventListener('pointermove', (ev) => {
+    if (pointerId !== ev.pointerId) return;
+    const dx = ev.clientX - startX;
+    const dy = ev.clientY - startY;
+    if (!dragging && (Math.hypot(dx,dy) > 8)) {
+      dragging = true;
+      node.classList.add('dragging');
+      document.body.style.userSelect = 'none';
+    }
+    if (dragging){
+      moved = true;
+      dragTx = dx; dragTy = dy;
+      applyDragTransform(dragTx, dragTy);
+    }
+  });
+
+  function onPointerUp(ev){
+    if (pointerId !== ev.pointerId) return;
+    node.releasePointerCapture(pointerId);
+    pointerId = null;
+    document.body.style.userSelect = '';
+    if (dragging){
+      node.classList.remove('dragging');
+      const finalX = Math.round(startLeft + dragTx);
+      const finalY = Math.round(startTop + dragTy);
+      const constrained = constrainToWall(finalX, finalY, node.offsetWidth, node.offsetHeight);
+      node.style.transition = 'left 420ms cubic-bezier(.2,.9,.2,1), top 420ms cubic-bezier(.2,.9,.2,1), transform 420ms cubic-bezier(.2,.9,.2,1)';
+      node.style.left = `${constrained.x}px`;
+      node.style.top = `${constrained.y}px`;
+      const r = getRotationForNode();
+      node.style.transform = `rotate(${r}deg)`;
+      data.position = {x:constrained.x, y:constrained.y};
+      node.addEventListener('transitionend', function te(){ node.style.transition=''; node.removeEventListener('transitionend', te); });
+      dragging = false; moved = true;
+    } else {
+      // not dragging, let click handler do flip
+    }
+  }
+
+  node.addEventListener('pointerup', onPointerUp);
+  node.addEventListener('pointercancel', onPointerUp);
+
+  node.addEventListener('click', (ev) => {
+    if (moved) { moved = false; return; } // ignore click synthesized after drag
+    // toggle inner flip — flipping inner preserves outer rotation
+    toggleFlip(node, data);
+  });
+
+  node.addEventListener('dblclick', (ev) => {
+    ev.stopPropagation();
+    openLightbox(data);
+  });
+
+  // ensure longpress doesn't show context menu
+  node.addEventListener('contextmenu', e => e.preventDefault());
+}
+
+/* flip toggles on the inner wrapper so layout changes don't stomp it */
+function toggleFlip(node, data){
+  const inner = node.querySelector('.polaroid-inner');
+  const wasFlipped = inner.classList.contains('flipped');
+  if (wasFlipped){
+    inner.classList.remove('flipped');
+  } else {
+    inner.classList.add('flipped');
+  }
+  // nudging z-index so flipped card sits up front briefly
+  zCounter++; node.style.zIndex = zCounter;
+  if (navigator.vibrate) navigator.vibrate(20);
+}
+
+/* constrain */
+function constrainToWall(x, y, width, height){
+  const margin = 12;
+  const wallRect = wall.getBoundingClientRect();
+  const maxX = Math.max(margin, wallRect.width - width - margin);
+  const newX = Math.max(margin, Math.min(x, maxX));
+  const newY = Math.max(margin, y);
+  return {x:newX, y:newY};
+}
+
+/* Lightbox */
+function openLightbox(data){
+  lightboxImg.src = data.src || '';
+  lightbox.classList.add('open');
+  lightbox.setAttribute('aria-hidden','false');
+}
+lightbox.addEventListener('click', ()=> {
+  lightbox.classList.remove('open');
+  lightbox.setAttribute('aria-hidden','true');
+  lightboxImg.src = '';
+});
+document.addEventListener('keydown', (e)=> {
+  if (e.key === 'Escape') { lightbox.classList.remove('open'); lightboxImg.src=''; }
+});
+
+/* =========================
+   UI wiring: tags, grid toggle (masonry <-> freeform), continue button
+   ========================= */
+document.querySelectorAll('.tag').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tag').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    activeFilter = t.dataset.tag;
+    createPolaroids();
+  });
+});
+
+tagToggle.addEventListener('click', ()=>{
+  const visible = tagFilter.style.display !== 'none';
+  tagFilter.style.display = visible ? 'none' : 'flex';
+  tagToggle.classList.toggle('active', !visible);
+  tagToggle.setAttribute('aria-expanded', !visible);
+});
+
+gridToggle.addEventListener('click', ()=>{
+  masonryMode = !masonryMode;
+  gridToggle.classList.toggle('active', masonryMode);
+  gridToggle.innerHTML = masonryMode ? '🔀 Masonry' : '⚏ Freeform';
+  if (!masonryMode){
+    // freeform: scatter with pile animation
+    scatterPileAnimation();
+    setTimeout(()=> layoutFreeform(), 280); // ensure positions are consistent after scatter
+  } else {
+    // back to masonry: realign (no rotation)
+    layoutMasonry();
+  }
+});
+
+/* Continue button interaction */
+continueBtn.addEventListener('click', ()=>{
+  continueBtn.classList.add('pressed');
+  setTimeout(()=> continueBtn.classList.remove('pressed'), 160);
+  setTimeout(()=> { window.location.href = 'birthdayGift.html'; }, 250);
+});
+
+/* Resize handling */
+let resizeTimer;
+window.addEventListener('resize', ()=>{
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(()=> {
+    layoutAll();
+  }, 120);
+});
+
+/* Startup overlay behaviour (short guide) */
+function showStartup(){
+  overlay.style.display = 'block';
+  startup.style.display = 'block';
+}
+function hideStartup(){
+  overlay.style.display = 'none';
+  startup.style.display = 'none';
+}
+startOk.addEventListener('click', ()=> hideStartup());
+overlay.addEventListener('click', ()=> hideStartup());
+showStartup(); // show every time (user asked removal of don't-show option)
+
+/* Initial build */
+createPolaroids();
+updateWallHeight();
+
+/* Shuffle keyboard */
+document.addEventListener('keydown', (e)=>{
+  if (e.key === 's') {
+    if (!masonryMode) {
+      for (let {node,data} of nodeMap.values()){
+        const w = node.offsetWidth;
+        const h = node.offsetHeight;
+        const x = Math.random() * Math.max(40, wall.clientWidth - w - 40) + 20;
+        const y = Math.random() * 220 + 40;
+        const rot = Math.random()*24 - 12;
+        data.position = {x:Math.round(x), y:Math.round(y)};
+        data._randRot = rot;
+        node.style.left = data.position.x + 'px';
+        node.style.top = data.position.y + 'px';
+        node.style.transform = `rotate(${rot}deg)`;
+      }
+      updateWallHeight();
+    } else {
+      createPolaroids();
+    }
+  }
+});
+
+/* =========================
+   Animated title generation
+   ========================= */
+(function makeAnimatedTitle(){
+  const text = "The Memories";
+  animatedTitle.innerHTML = '';
+  for (let i=0;i<text.length;i++){
+    const ch = text[i];
+    const span = document.createElement('span');
+    span.className = 'char';
+    span.textContent = ch;
+    const dur = (1.8 + Math.random()*1.3).toFixed(2) + 's';
+    const delay = (Math.random()*0.6).toFixed(2) + 's';
+    span.style.animation = `floaty ${dur} ease-in-out ${delay} infinite`;
+    span.style.display = 'inline-block';
+    animatedTitle.appendChild(span);
+  }
+})();
+
+</script>
+</body>
+</html>

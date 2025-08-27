@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Happy Birthday</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400;500;600;700&family=Tiro+Devanagari+Hindi:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* Custom font face - Winterante ko load karne ke liye */
+    @font-face {
+      font-family: 'Winterante';
+      src: url('Winterante.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    /* CSS Variables - saare colors aur effects ke liye central system */
+    :root {
+      --krishna-blue: #6ec1e4;
+      --medium-blue: #3a7bd5;
+      --lotus-pink: #f7b6d2;
+      --divine-gold: #ffe9a8;
+      --glass: rgba(255, 255, 255, 0.2);
+      --glass-border: rgba(255, 255, 255, 0.35);
+      --glass-shadow: rgba(0, 0, 0, 0.12);
+      --accent-purple: #8b5a8c;
+      
+      /* Container sizes - different screen sizes ke liye */
+      --container-padding: clamp(1rem, 4vw, 2rem);
+      --card-max-width: min(90vw, 520px);
+      --card-padding: clamp(2rem, 6vw, 3rem);
+    }
+
+    /* Base reset - sabko clean slate dena */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* HTML aur Body setup - full height aur overflow control */
+    html {
+      height: 100%;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      touch-action: manipulation;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      width: 100%;
+      font-family: 'Baloo Bhaijaan 2', sans-serif;
+      /* Beautiful gradient background jo slowly change hota rahega */
+      background: linear-gradient(
+        145deg,
+        var(--krishna-blue),
+        var(--medium-blue),
+        var(--lotus-pink),
+        var(--divine-gold)
+      );
+      background-size: 400% 400%;
+      animation: bgShift 25s ease infinite;
+      overflow-x: hidden;
+    }
+
+    /* Background animation - colors smoothly change karte rahenge */
+    @keyframes bgShift {
+      0%, 100% { background-position: 0% 50%; }
+      25% { background-position: 50% 0%; }
+      50% { background-position: 100% 50%; }
+      75% { background-position: 50% 100%; }
+    }
+
+    /* Main container - content ko center mein rakhne ke liye */
+    main {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--container-padding);
+      flex-direction: column;
+      gap: clamp(1rem, 3vw, 2rem);
+    }
+
+    /* Card container - main content area with glass effect */
+    .card {
+      position: relative;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border-radius: clamp(1.5rem, 4vw, 2rem);
+      padding: var(--card-padding);
+      padding-bottom: clamp(4rem, 8vw, 6rem); /* Krishna image ke liye extra space */
+      max-width: var(--card-max-width);
+      width: 100%;
+      box-shadow: 
+        0 20px 60px var(--glass-shadow), 
+        0 0 0 1px rgba(255,255,255,0.15) inset;
+      text-align: center;
+      overflow: visible;
+      /* Smooth entrance animation */
+      animation: cardEnter 1.5s ease 0.5s both;
+    }
+
+    /* Card entrance animation */
+    @keyframes cardEnter {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Glass effect overlay - extra shine ke liye */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        135deg, 
+        rgba(255,255,255,0.1), 
+        transparent, 
+        rgba(255,255,255,0.05)
+      );
+      pointer-events: none;
+      border-radius: inherit;
+    }
+
+    /* Card top section - calendar aur date pill ke liye */
+    .card-top {
+      position: absolute;
+      top: clamp(-4rem, -8vw, -3rem);
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(0.5rem, 2vw, 1rem);
+      z-index: 20;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    /* Glass calendar design */
+    .gcal {
+      width: clamp(70px, 15vw, 80px);
+      height: clamp(80px, 18vw, 90px);
+      border-radius: clamp(12px, 3vw, 16px);
+      overflow: hidden;
+      background: rgba(173,216,230,.25);
+      border: 1px solid rgba(255,255,255,.35);
+      box-shadow:
+        0 8px 32px rgba(135,206,250,.45),
+        inset 0 1px 0 rgba(255,255,255,.5);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      color: #0077b6;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    /* Calendar floating animation */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* Calendar month header */
+    .gcal .month {
+      background: linear-gradient(135deg,#90d5ff,#ffffff);
+      font-size: clamp(10px, 2.5vw, 12px);
+      font-weight: 700;
+      padding: clamp(3px, 1vw, 4px) 0;
+      letter-spacing: 0.5px;
+    }
+
+    /* Calendar date number */
+    .gcal .date {
+      font-size: clamp(24px, 6vw, 32px);
+      font-weight: 700;
+      line-height: 1;
+      padding: clamp(8px, 3vw, 12px) 0 clamp(4px, 2vw, 6px);
+      text-shadow: 0 0 8px rgba(255,255,255,.8);
+    }
+
+    /* Date pill beside calendar */
+    .date-pill {
+      padding: clamp(6px, 2vw, 8px) clamp(12px, 3vw, 16px);
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 999px;
+      font-size: clamp(0.8rem, 3vw, 0.9rem);
+      font-weight: 600;
+      color: #2d5a4f;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      white-space: nowrap;
+      animation: fadeSlide 2s ease forwards;
+      opacity: 0;
+    }
+
+    /* Pill entrance animation */
+    @keyframes fadeSlide {
+      from {
+        opacity: 0;
+        transform: translateY(-15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Main heading - Krishna ke liye special font */
+    .card h1 {
+      font-family: 'Winterante', 'Tiro Devanagari Hindi', sans-serif;
+      font-size: clamp(1.8rem, 6vw, 2.8rem);
+      background: linear-gradient(135deg, #2d5a4f, var(--accent-purple), #4a7c59);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: clamp(1rem, 3vw, 1.5rem);
+      line-height: 2;
+      font-weight: 500;
+    }
+
+    /* Paragraph text styling */
+    .card p {
+      font-size: clamp(1rem, 3.5vw, 1.2rem);
+      color: rgba(45, 90, 79, 0.85);
+      margin-bottom: clamp(1.5rem, 4vw, 2rem);
+      line-height: 1.6;
+      font-weight: 500;
+      max-width: 100%;
+    }
+
+    /* Beautiful button with animations */
+    .card button {
+      background: linear-gradient(135deg, #4a7c59, #7fb069, var(--accent-purple));
+      background-size: 200% 200%;
+      color: #fff;
+      font-family: 'Baloo Bhaijaan 2', sans-serif;
+      font-size: clamp(1rem, 3.5vw, 1.1rem);
+      font-weight: 600;
+      border: none;
+      border-radius: 50px;
+      padding: clamp(0.8rem, 3vw, 1rem) clamp(1.5rem, 4vw, 2rem);
+      cursor: pointer;
+      box-shadow: 
+        0 10px 30px rgba(45, 90, 79, 0.4), 
+        0 4px 12px rgba(45, 90, 79, 0.3);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      min-height: 48px;
+      touch-action: manipulation;
+      animation: buttonGlow 3s ease-in-out infinite;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    /* Button glow animation */
+    @keyframes buttonGlow {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    /* Button shine effect */
+    .card button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.6s ease;
+    }
+
+    /* Button hover effects */
+    .card button:hover::before,
+    .card button:active::before {
+      left: 100%;
+    }
+
+    .card button:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 
+        0 15px 40px rgba(45, 90, 79, 0.5), 
+        0 6px 18px rgba(45, 90, 79, 0.4);
+    }
+
+    .card button:active {
+      transform: translateY(0) scale(0.98);
+      transition: all 0.1s ease;
+    }
+
+    /* Krishna image positioning - card ke bottom mein peek karta hua */
+    .krishna-peek-inside {
+      position: absolute;
+      bottom: -1px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: clamp(90px, 18vw, 130px);
+      height: clamp(90px, 18vw, 130px);
+      z-index: 5;
+    }
+
+    .krishna-peek-inside img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      animation: krishnaBob 4s ease-in-out infinite;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+    }
+
+    /* Krishna bobbing animation - cute movement effect */
+    @keyframes krishnaBob {
+      0%, 100% { transform: translateY(0) rotate(-1deg); }
+      50% { transform: translateY(-8px) rotate(1deg); }
+    }
+
+    /* Floating items around the card - decorative elements */
+    .card .floater-item {
+      position: absolute;
+      animation: itemFloat 10s ease-in-out infinite;
+      opacity: 0.9;
+      pointer-events: none;
+      z-index: 6;
+      width: clamp(50px, 12vw, 80px);
+    }
+    
+    .card .floater-item img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      max-width: 80px;
+    }
+
+    /* Floating items positions - card ke around */
+    .floater-top-left { 
+      top: clamp(20px, 5vw, 40px); 
+      left: clamp(-15px, -3vw, -20px); 
+    }
+    .floater-top-right { 
+      top: clamp(-5px, -1vw, -10px); 
+      right: clamp(-15px, -3vw, -20px); 
+    }
+    .floater-bottom-left { 
+      bottom: clamp(-20px, -4vw, -40px); 
+      left: clamp(-15px, -3vw, -20px); 
+    }
+    .floater-bottom-right { 
+      bottom: clamp(-20px, -4vw, -40px); 
+      right: clamp(-15px, -3vw, -20px); 
+    }
+
+    /* Floating animation for decorative items */
+    @keyframes itemFloat {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      33% { transform: translateY(-12px) rotate(3deg); }
+      66% { transform: translateY(-6px) rotate(-2deg); }
+    }
+
+    /* Background floating elements - page ke background mein */
+    .floater {
+      position: fixed;
+      pointer-events: none;
+      opacity: 0.3;
+      will-change: transform;
+      animation: complexFloat 20s ease-in-out infinite;
+      transform-origin: center;
+      z-index: 1;
+    }
+
+    .floater.large {
+      opacity: 0.4;
+      z-index: 2;
+    }
+
+    .floater.small {
+      opacity: 0.25;
+    }
+
+    /* Complex floating animation for background elements */
+    @keyframes complexFloat {
+      0% { 
+        transform: translateY(0) translateX(0) rotate(0deg) scale(1);
+        opacity: 0.3;
+      }
+      20% { 
+        transform: translateY(-20px) translateX(10px) rotate(72deg) scale(1.1);
+        opacity: 0.4;
+      }
+      40% { 
+        transform: translateY(-15px) translateX(-5px) rotate(144deg) scale(0.9);
+        opacity: 0.35;
+      }
+      60% { 
+        transform: translateY(-25px) translateX(15px) rotate(216deg) scale(1.05);
+        opacity: 0.45;
+      }
+      80% { 
+        transform: translateY(-10px) translateX(-10px) rotate(288deg) scale(0.95);
+        opacity: 0.3;
+      }
+      100% { 
+        transform: translateY(0) translateX(0) rotate(360deg) scale(1);
+        opacity: 0.3;
+      }
+    }
+
+    /* Sparkle effects - magical touch ke liye */
+    .sparkle {
+      position: fixed;
+      width: 4px;
+      height: 4px;
+      background: radial-gradient(circle, #ffd700, transparent);
+      border-radius: 50%;
+      animation: sparkle 3s ease-in-out infinite;
+      z-index: 3;
+    }
+
+    @keyframes sparkle {
+      0%, 100% { 
+        opacity: 0;
+        transform: scale(0);
+      }
+      50% { 
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* Mobile devices ke liye special optimizations */
+    @media (max-width: 480px) {
+      .card-top {
+        position: relative;
+        top: 50px;
+	left: 0;
+        transform: none;
+        margin-top: 3.5rem;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      
+      .card {
+        margin: 0.5rem;
+        padding: 1.5rem 1.5rem 3rem;
+        border-radius: 1.5rem;
+      }
+      
+      .krishna-peek-inside {
+        width: 80px;
+        height: 80px;
+      }
+      
+      .floater-item {
+        width: 60px;
+      }
+      
+      /* Mobile mein floating items ko thoda adjust karna */
+      .floater-top-left, .floater-top-right {
+        top: 10px;
+      }
+      
+      .floater-bottom-left, .floater-bottom-right {
+        bottom: -20px;
+      }
+    }
+
+    /* Small height screens ke liye - landscape phones */
+    @media (max-height: 600px) {
+      main {
+        gap: 0.5rem;
+        padding: 1rem;
+      }
+      
+      .card {
+        padding: 1.5rem;
+        padding-bottom: 3rem;
+      }
+      
+      .card-top {
+        top: -3rem;
+      }
+    }
+
+    /* Tablet aur medium screens ke liye */
+    @media (min-width: 481px) and (max-width: 768px) {
+      .card {
+        max-width: 480px;
+      }
+      
+      .card-top {
+        top: -3.5rem;
+      }
+    }
+
+    /* Large screens ke liye */
+    @media (min-width: 1024px) {
+      main {
+        padding: 2rem;
+      }
+      
+      .card {
+        max-width: 520px;
+      }
+      
+      .card button:hover {
+        transform: translateY(-3px) scale(1.05);
+      }
+    }
+
+    /* Font size fix - zoom prevent karne ke liye */
+    input, button, textarea, select {
+      font-size: 16px !important;
+    }
+
+    /* High DPI screens ke liye */
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+      .krishna-peek-inside img,
+      .floater-item img {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+      }
+    }
+
+    /* Reduced motion preference ke liye */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <!-- Main card container - sabse important content yahan hai -->
+    <div class="card">
+      <!-- Top section - calendar aur date pill -->
+      <div class="card-top">
+        <div class="gcal">
+          <div class="month">SEP</div>
+          <div class="date">27</div>
+        </div>
+        <div class="date-pill" id="datePill">Loading…</div>
+      </div>
+      
+      <!-- Krishna image jo card ke bottom se peek kar raha hai -->
+      <div class="krishna-peek-inside">
+        <img src="littleKanha.png" alt="Peeking Krishna" />
+      </div>
+      
+      <!-- Floating decorative items - card ke around -->
+      <div class="floater-item floater-top-left">
+        <img src="emoji (2).gif" alt="Floating emoji" />
+      </div>
+      
+      <div class="floater-item floater-top-right">
+        <img src="cake.gif" alt="Floating cake" />
+      </div>
+      
+      <div class="floater-item floater-bottom-left">
+        <img src="gift.gif" alt="Floating gift" />
+      </div>
+      
+      <div class="floater-item floater-bottom-right">
+        <img src="peacock.gif" alt="Floating peacock" />
+      </div>
+
+      <!-- Main content - heading, text aur button -->
+      <h1>On this blessed Birthday…</h1>
+      <p>…may Krishna's flute guide your heart to peace, love, and a joyful birthday journey.</p>
+      <button onclick="location.href='phase2.html'">With every step, a leela unfolds</button>
+    </div>
+  </main>
+
+  <script>
+    // Date calculation - kitne din baaki hain birthday mein
+    const pillEl = document.getElementById("datePill");
+    const targetDate = new Date("2025-09-27");
+    const today = new Date();
+    const daysLeft = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
+    
+    // Pill mein text update karna
+    pillEl.textContent = daysLeft > 0 ? `${daysLeft} days left` : "🎉 It's today!";
+
+    // Background floating elements ke liye images
+    const floaters = [
+      "bgele1.png",
+      "bgele2.png"
+    ];
+
+    // Background mein random floating elements create karna
+    for (let i = 0; i < 15; i++) {
+      const img = document.createElement("img");
+      img.src = floaters[Math.floor(Math.random() * floaters.length)];
+      img.className = "floater";
+      
+      // Random size aur position
+      const size = 40 + Math.random() * 60;
+      const isLarge = size > 70;
+      const isSmall = size < 50;
+      
+      // Size ke hisaab se classes add karna
+      if (isLarge) img.classList.add('large');
+      if (isSmall) img.classList.add('small');
+      
+      // Random positioning
+      img.style.top = `${Math.random() * 100}vh`;
+      img.style.left = `${Math.random() * 100}vw`;
+      img.style.width = `${size}px`;
+      img.style.transform = `rotate(${Math.random() * 360}deg)`;
+      img.style.animationDuration = `${15 + Math.random() * 20}s`;
+      img.style.animationDelay = `${Math.random() * 10}s`;
+      
+      document.body.appendChild(img);
+    }
+
+    // Sparkle effects add karna - magical feeling ke liye
+    for (let i = 0; i < 20; i++) {
+      const sparkle = document.createElement("div");
+      sparkle.className = "sparkle";
+      sparkle.style.top = `${Math.random() * 100}vh`;
+      sparkle.style.left = `${Math.random() * 100}vw`;
+      sparkle.style.animationDelay = `${Math.random() * 3}s`;
+      sparkle.style.animationDuration = `${2 + Math.random() * 2}s`;
+      document.body.appendChild(sparkle);
+    }
+
+    // Mobile optimization - double tap zoom prevent karna
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function (event) {
+      const now = (new Date()).getTime();
+      if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+      }
+      lastTouchEnd = now;
+    }, false);
+
+    // Context menu disable karna - long press par
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    // Orientation change handle karna - mobile rotate karne par
+    window.addEventListener('orientationchange', function() {
+      setTimeout(function() {
+        window.scrollTo(0, 0);
+      }, 100);
+    });
+
+    // Resize event listener - window size change par adjustments
+    window.addEventListener('resize', function() {
+      // Viewport height ko update karna CSS custom properties mein
+      document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+    });
+
+    // Initial viewport height set karna
+    document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+  </script>
+</body>
+</html>
